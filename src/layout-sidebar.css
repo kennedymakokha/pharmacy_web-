@@ -1,0 +1,312 @@
+
+/* =========================================
+   REFACTORED APP LAYOUT
+   Scrollable + collapsible sidebar
+========================================= */
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  height: 100dvh;
+  flex: 0 0 250px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+  transition: width 220ms ease, flex-basis 220ms ease;
+  z-index: 50;
+}
+
+.sidebar .brand {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar .brand-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.sidebar-collapse-btn,
+.sidebar-mobile-close {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 7px;
+}
+
+.sidebar-collapse-btn:hover,
+.sidebar-mobile-close:hover {
+  background: rgba(127, 127, 127, 0.13);
+}
+
+.sidebar-mobile-close {
+  display: none;
+}
+
+.sidebar-nav,
+.sidebar nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 5px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(145, 160, 180, 0.55) transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar,
+.sidebar nav::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb,
+.sidebar nav::-webkit-scrollbar-thumb {
+  background: rgba(145, 160, 180, 0.55);
+  border-radius: 10px;
+}
+
+.sidebar-bottom {
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+.sidebar.collapsed {
+  width: 78px;
+  flex-basis: 78px;
+}
+
+.sidebar.collapsed .brand {
+  justify-content: center;
+  flex-wrap: wrap;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.sidebar.collapsed .brand-mark {
+  margin: 0 auto;
+}
+
+.sidebar.collapsed .sidebar-collapse-btn {
+  margin: 0 auto;
+}
+
+.sidebar.collapsed .nav-link {
+  justify-content: center;
+  gap: 0;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.sidebar.collapsed .nav-link span {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-bottom {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.sidebar.collapsed .logout {
+  justify-content: center;
+  gap: 0;
+}
+
+.sidebar.collapsed .logout span {
+  display: none;
+}
+
+.main {
+  min-width: 0;
+  flex: 1;
+}
+
+.sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .sidebar,
+  .sidebar.collapsed {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 250px;
+    flex-basis: 250px;
+    height: 100dvh;
+    transform: translateX(-105%);
+    transition: transform 220ms ease;
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+
+  .sidebar.collapsed .brand-copy,
+  .sidebar.collapsed .nav-link span,
+  .sidebar.collapsed .health-note,
+  .sidebar.collapsed .sidebar-heart,
+  .sidebar.collapsed .logout span {
+    display: initial;
+  }
+
+  .sidebar.collapsed .brand {
+    justify-content: flex-start;
+  }
+
+  .sidebar.collapsed .nav-link {
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .sidebar-collapse-btn {
+    display: none;
+  }
+
+  .sidebar-mobile-close {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    border: 0;
+    background: rgba(15, 23, 42, 0.45);
+  }
+
+  .mobile-menu {
+    display: inline-flex !important;
+  }
+}
+
+@media (min-width: 901px) {
+  .mobile-menu {
+    display: none !important;
+  }
+}
+
+/* =========================================
+   MAIN CONTENT - SIDEBAR RESPONSIVENESS
+========================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.app-shell {
+  display: flex !important;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Sidebar width controls the available main area */
+.app-shell > .sidebar {
+  width: 250px;
+  min-width: 250px;
+  max-width: 250px;
+  flex: 0 0 250px;
+  transition:
+    width 250ms ease,
+    min-width 250ms ease,
+    max-width 250ms ease,
+    flex-basis 250ms ease;
+}
+
+/* Collapsed sidebar */
+.app-shell.sidebar-is-collapsed > .sidebar {
+  width: 78px;
+  min-width: 78px;
+  max-width: 78px;
+  flex-basis: 78px;
+}
+
+/* Main area automatically fills remaining space */
+.app-shell > .main {
+  flex: 1 1 0%;
+  width: 0;
+  min-width: 0;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  overflow-x: hidden;
+  transition: width 250ms ease;
+}
+
+/* Topbar should always occupy the available width */
+.app-shell > .main > .topbar {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Page content */
+.app-shell > .main > .content {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+/* Prevent tables and wide components from stretching the layout */
+.app-shell > .main .page-heading {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Mobile: sidebar becomes an overlay, not a flex column */
+@media (max-width: 900px) {
+  .app-shell {
+    display: block !important;
+    width: 100%;
+  }
+
+  .app-shell > .sidebar,
+  .app-shell.sidebar-is-collapsed > .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 250px;
+    min-width: 250px;
+    max-width: 250px;
+    height: 100dvh;
+    flex: none;
+    transform: translateX(-105%);
+    z-index: 100;
+  }
+
+  .app-shell > .sidebar.show {
+    transform: translateX(0);
+  }
+
+  .app-shell > .main {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+  }
+}
