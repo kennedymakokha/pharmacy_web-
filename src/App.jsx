@@ -337,7 +337,11 @@ function PharmacyApp() {
             />
 
             {/* REPORTS */}
-            <Route path="/reports" element={protectPage(<ReportsPage />)} />
+            {/* REPORTS */}
+            <Route
+              path="/reports"
+              element={protectPage("reports", <ReportsPage />)}
+            />
 
             {/* STAFF & USERS */}
             <Route
