@@ -26,7 +26,7 @@ export const categoryApi = api.injectEndpoints({
     // PUT /categories/:id
     updateCategory: builder.mutation({
       query: ({ id, ...body }) => ({
-        url: `/categories/${id}`,
+        url: `/categories/${body.uuid}`,
         method: "PUT",
         body,
       }),

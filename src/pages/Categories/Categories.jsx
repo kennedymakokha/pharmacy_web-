@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from "react";
 import {
   Plus,
@@ -55,14 +54,11 @@ export default function CategoriesPage() {
     refetch,
   } = useGetCategoriesQuery({ page, limit: PAGE_LIMIT });
 
-  const [createCategory, { isLoading: creating }] =
-    useCreateCategoryMutation();
+  const [createCategory, { isLoading: creating }] = useCreateCategoryMutation();
 
-  const [updateCategory, { isLoading: updating }] =
-    useUpdateCategoryMutation();
+  const [updateCategory, { isLoading: updating }] = useUpdateCategoryMutation();
 
-  const [deleteCategory, { isLoading: deleting }] =
-    useDeleteCategoryMutation();
+  const [deleteCategory, { isLoading: deleting }] = useDeleteCategoryMutation();
 
   const categories = response?.data || [];
   const pagination = response?.pagination || {};
@@ -79,7 +75,7 @@ export default function CategoriesPage() {
     return categories.filter((category) =>
       `${category.name || ""} ${category.uuid || ""}`
         .toLowerCase()
-        .includes(term)
+        .includes(term),
     );
   }, [categories, search]);
 
@@ -101,6 +97,7 @@ export default function CategoriesPage() {
   }
 
   function openEditModal(category) {
+   
     setEditing(category);
     setCategoryName(category.name || "");
     setModalOpen(true);
@@ -124,8 +121,9 @@ export default function CategoriesPage() {
 
     try {
       if (editing) {
+       
         await updateCategory({
-          id: editing._id,
+          uuid:editing.uuid,
           name,
         }).unwrap();
 
@@ -145,13 +143,13 @@ export default function CategoriesPage() {
 
   async function handleDelete(category) {
     const confirmed = window.confirm(
-      `Are you sure you want to delete "${category.name}"?`
+      `Are you sure you want to delete "${category.name}"?`,
     );
 
     if (!confirmed) return;
 
     try {
-      await deleteCategory(category._id).unwrap();
+      await deleteCategory(category.uuid).unwrap();
 
       showMessage("Category deleted successfully.");
 
@@ -198,9 +196,7 @@ export default function CategoriesPage() {
 
             <div>
               <h2>Categories</h2>
-              <p>
-                Manage and organise the categories used for your medicines.
-              </p>
+              <p>Manage and organise the categories used for your medicines.</p>
             </div>
           </div>
 
@@ -211,10 +207,7 @@ export default function CategoriesPage() {
               onClick={() => refetch()}
               disabled={isFetching}
             >
-              <RefreshCw
-                size={16}
-                className={isFetching ? "spin" : ""}
-              />
+              <RefreshCw size={16} className={isFetching ? "spin" : ""} />
               <span>Refresh</span>
             </button>
 
@@ -274,9 +267,7 @@ export default function CategoriesPage() {
           </div>
 
           {isFetching && !isLoading && (
-            <span className="category-fetching">
-              Updating...
-            </span>
+            <span className="category-fetching">Updating...</span>
           )}
         </div>
 
@@ -304,11 +295,7 @@ export default function CategoriesPage() {
               <Tags size={30} />
             </div>
 
-            <h3>
-              {search
-                ? "No matching categories"
-                : "No categories found"}
-            </h3>
+            <h3>{search ? "No matching categories" : "No categories found"}</h3>
 
             <p>
               {search
@@ -362,20 +349,19 @@ export default function CategoriesPage() {
 
                       <td>
                         {category.createdAt
-                          ? new Date(
-                              category.createdAt
-                            ).toLocaleDateString("en-KE", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            })
+                          ? new Date(category.createdAt).toLocaleDateString(
+                              "en-KE",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              },
+                            )
                           : "—"}
                       </td>
 
                       <td>
-                        <span className="category-status">
-                          Active
-                        </span>
+                        <span className="category-status">Active</span>
                       </td>
 
                       <td>
@@ -419,9 +405,7 @@ export default function CategoriesPage() {
                   type="button"
                   className="icon-btn"
                   disabled={currentPage <= 1 || isFetching}
-                  onClick={() =>
-                    setPage((old) => Math.max(1, old - 1))
-                  }
+                  onClick={() => setPage((old) => Math.max(1, old - 1))}
                   title="Previous page"
                 >
                   <ChevronLeft size={18} />
@@ -430,13 +414,9 @@ export default function CategoriesPage() {
                 <button
                   type="button"
                   className="icon-btn"
-                  disabled={
-                    currentPage >= totalPages || isFetching
-                  }
+                  disabled={currentPage >= totalPages || isFetching}
                   onClick={() =>
-                    setPage((old) =>
-                      Math.min(totalPages, old + 1)
-                    )
+                    setPage((old) => Math.min(totalPages, old + 1))
                   }
                   title="Next page"
                 >
@@ -454,20 +434,14 @@ export default function CategoriesPage() {
           title={editing ? "Edit category" : "Add category"}
           onClose={closeModal}
         >
-          <form
-            className="form-grid"
-            onSubmit={handleSubmit}
-          >
+          <form className="form-grid" onSubmit={handleSubmit}>
             <label>
               Category name
-
               <input
                 type="text"
                 placeholder="e.g. Dermatology"
                 value={categoryName}
-                onChange={(e) =>
-                  setCategoryName(e.target.value)
-                }
+                onChange={(e) => setCategoryName(e.target.value)}
                 required
                 autoFocus
               />
