@@ -40,6 +40,10 @@ export const PAGE_PERMISSIONS = {
     label: "Reports",
     path: "/reports",
   },
+  roles: {
+    label: "Roles & Permissions",
+    path: "/roles",
+  },
   users: {
     label: "Staff & Users",
     path: "/users",
@@ -48,10 +52,6 @@ export const PAGE_PERMISSIONS = {
     label: "Settings",
     path: "/settings",
   },
-  roles: {
-  label: "Roles & Permissions",
-  path: "/roles",
-},
 };
 
 // --------------------------------------------------
@@ -72,6 +72,12 @@ export function isAdmin(user) {
 }
 
 // --------------------------------------------------
+// ADMIN-ONLY PAGES
+// --------------------------------------------------
+
+const ADMIN_ONLY_PAGES = ["users", "roles"];
+
+// --------------------------------------------------
 // DEFAULT ROLE PERMISSIONS
 // --------------------------------------------------
 
@@ -79,11 +85,8 @@ const DEFAULT_ROLE_PERMISSIONS = {
   pharmacist: [
     "dashboard",
     "medicines",
-    "categories",
     "sales",
-    "inventory",
     "customers",
-    "prescriptions",
     "reports",
   ],
 
@@ -121,20 +124,20 @@ const DEFAULT_ROLE_PERMISSIONS = {
 // --------------------------------------------------
 
 export function getUserPermissions(user) {
-  const directPermissions = Array.isArray(user?.permissions)
+  if (!user) return [];
+
+  const directPermissions = Array.isArray(user.permissions)
     ? user.permissions
     : [];
 
-  const rolePermissions = Array.isArray(user?.role?.permissions)
+  const rolePermissions = Array.isArray(user.role?.permissions)
     ? user.role.permissions
     : [];
 
-  // Explicit permissions take priority.
   if (directPermissions.length || rolePermissions.length) {
     return [...new Set([...directPermissions, ...rolePermissions])];
   }
 
-  // Fall back to default role permissions.
   return DEFAULT_ROLE_PERMISSIONS[getUserRole(user)] || [];
 }
 
@@ -147,8 +150,10 @@ export function canAccessPage(user, permission) {
 
   if (isAdmin(user)) return true;
 
-  // Only administrators can manage role permissions.
-  if (permission === "roles") return false;
+  // Staff and role management are administrator-only.
+  if (ADMIN_ONLY_PAGES.includes(permission)) {
+    return false;
+  }
 
   const permissions = getUserPermissions(user);
 
