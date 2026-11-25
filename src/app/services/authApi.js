@@ -3,11 +3,11 @@ import { api } from "./api";
 export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation({
-      query: ({ phone_number, password }) => ({
+      query: ({ username, password }) => ({
         url: "/auth/login",
         method: "POST",
         body: {
-          phone_number,
+          username,
           password,
         },
       }),

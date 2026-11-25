@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import {
   LockKeyhole,
-  Phone,
+  UserRound,
   Eye,
   EyeOff,
   ArrowRight,
@@ -17,7 +17,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const [phone_number, setPhoneNumber] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -34,12 +34,14 @@ export default function Login() {
 
     try {
       const response = await login({
-        phone_number: phone_number.trim(),
+        username: username.trim().toLowerCase(),
         password,
       }).unwrap();
 
       if (!response?.token) {
-        throw new Error("Login response did not contain an authentication token.");
+        throw new Error(
+          "Login response did not contain an authentication token."
+        );
       }
 
       const credentials = {
@@ -57,13 +59,12 @@ export default function Login() {
 
       storage.setItem(
         "pharmacy_auth",
-        JSON.stringify(credentials),
+        JSON.stringify(credentials)
       );
 
       // Update Redux authentication state.
       dispatch(setCredentials(credentials));
 
-      // Navigate to dashboard.
       navigate("/dashboard", { replace: true });
     } catch (err) {
       const message =
@@ -86,7 +87,6 @@ export default function Login() {
             <div className="login-logo">
               <Pill size={27} />
             </div>
-
             <span>PharmaCare</span>
           </div>
 
@@ -108,28 +108,18 @@ export default function Login() {
 
             <div className="login-feature-list">
               <div>
-                <span>
-                  <Activity size={18} />
-                </span>
-
+                <span><Activity size={18} /></span>
                 <p>
                   <strong>Real-time inventory</strong>
-                  <small>
-                    Stay updated on your stock levels.
-                  </small>
+                  <small>Stay updated on your stock levels.</small>
                 </p>
               </div>
 
               <div>
-                <span>
-                  <ShieldCheck size={18} />
-                </span>
-
+                <span><ShieldCheck size={18} /></span>
                 <p>
                   <strong>Secure management</strong>
-                  <small>
-                    Your pharmacy data stays protected.
-                  </small>
+                  <small>Your pharmacy data stays protected.</small>
                 </p>
               </div>
             </div>
@@ -148,19 +138,15 @@ export default function Login() {
             <div className="login-logo">
               <Pill size={25} />
             </div>
-
             <span>PharmaCare</span>
           </div>
 
           <div className="login-form-heading">
-            <span className="login-welcome">
-              WELCOME BACK
-            </span>
-
+            <span className="login-welcome">WELCOME BACK</span>
             <h2>Sign in to your account</h2>
-
             <p>
-              Enter your credentials to access your pharmacy dashboard.
+              Enter your username and password to access your pharmacy
+              dashboard.
             </p>
           </div>
 
@@ -171,23 +157,25 @@ export default function Login() {
           )}
 
           <form onSubmit={handleLogin} className="login-form">
-            {/* Phone number */}
+            {/* Username */}
             <div className="login-field">
-              <label htmlFor="login-phone">
-                Phone number
+              <label htmlFor="login-username">
+                Username
               </label>
 
               <div className="login-input-wrapper">
-                <Phone size={18} />
+                <UserRound size={18} />
 
                 <input
-                  id="login-phone"
-                  type="tel"
-                  name="phone_number"
-                  value={phone_number}
-                  placeholder="Enter phone number"
-                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  id="login-username"
+                  type="text"
+                  name="username"
+                  value={username}
+                  placeholder="Enter your username"
+                  onChange={(e) => setUsername(e.target.value)}
                   autoComplete="username"
+                  autoCapitalize="none"
+                  spellCheck={false}
                   required
                 />
               </div>
@@ -238,7 +226,6 @@ export default function Login() {
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
                 />
-
                 <span>Remember me</span>
               </label>
 
@@ -247,7 +234,7 @@ export default function Login() {
                 className="login-forgot"
                 onClick={() =>
                   setError(
-                    "Please contact your administrator to reset your password.",
+                    "Please contact your administrator to reset your password."
                   )
                 }
               >
@@ -261,17 +248,13 @@ export default function Login() {
               className="login-submit"
               disabled={isLoading}
             >
-              <span>
-                {isLoading ? "Signing in..." : "Sign in"}
-              </span>
-
+              <span>{isLoading ? "Signing in..." : "Sign in"}</span>
               {!isLoading && <ArrowRight size={19} />}
             </button>
           </form>
 
           <div className="login-security-note">
             <ShieldCheck size={16} />
-
             <span>
               Secure access to your pharmacy management system
             </span>

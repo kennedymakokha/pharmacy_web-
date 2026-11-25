@@ -13,7 +13,6 @@ import {
   RefreshCw,
   Phone,
   Mail,
-  Briefcase,
   AlertCircle,
 } from "lucide-react";
 
@@ -43,6 +42,7 @@ const STATUSES = [
 
 const initialForm = {
   name: "",
+  username: "",
   phone_number: "",
   email: "",
   password: "",
@@ -114,6 +114,7 @@ function UsersPage() {
     useDeleteUserMutation();
 
   const users = response?.data || [];
+
   const pagination = response?.pagination || {
     total: 0,
     page: 1,
@@ -125,7 +126,7 @@ function UsersPage() {
 
   const openCreateModal = () => {
     setEditingUser(null);
-    setForm(initialForm);
+    setForm({ ...initialForm });
     setFormError("");
     setModalOpen(true);
   };
@@ -135,6 +136,7 @@ function UsersPage() {
 
     setForm({
       name: user.name || "",
+      username: user.username || "",
       phone_number: user.phone_number || "",
       email: user.email || "",
       password: "",
@@ -155,7 +157,7 @@ function UsersPage() {
 
     setModalOpen(false);
     setEditingUser(null);
-    setForm(initialForm);
+    setForm({ ...initialForm });
     setFormError("");
   };
 
@@ -172,8 +174,22 @@ function UsersPage() {
     event.preventDefault();
     setFormError("");
 
+    const username = form.username.trim().toLowerCase();
+
     if (!form.name.trim()) {
       setFormError("Staff member name is required.");
+      return;
+    }
+
+    if (!username) {
+      setFormError("Username is required.");
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9._-]{3,30}$/.test(username)) {
+      setFormError(
+        "Username must be 3–30 characters and contain only letters, numbers, dots, underscores or hyphens."
+      );
       return;
     }
 
@@ -183,14 +199,13 @@ function UsersPage() {
     }
 
     if (!editingUser && !form.password.trim()) {
-      setFormError(
-        "Password is required. Leave it blank only when editing an existing account."
-      );
+      setFormError("Password is required when creating an account.");
       return;
     }
 
     const payload = {
       name: form.name.trim(),
+      username,
       phone_number: form.phone_number.trim(),
       email: form.email.trim(),
       role: form.role,
@@ -208,7 +223,7 @@ function UsersPage() {
     try {
       if (editingUser) {
         await updateUser({
-          id: editingUser.uuid,
+          id: editingUser._id,
           ...payload,
         }).unwrap();
       } else {
@@ -217,7 +232,8 @@ function UsersPage() {
 
       setModalOpen(false);
       setEditingUser(null);
-      setForm(initialForm);
+      setForm({ ...initialForm });
+      setFormError("");
     } catch (err) {
       setFormError(getErrorMessage(err));
     }
@@ -276,7 +292,7 @@ function UsersPage() {
 
             <input
               type="search"
-              placeholder="Search by name, phone, email or ID..."
+              placeholder="Search by name, username, phone, email or ID..."
               value={search}
               onChange={handleSearch}
             />
@@ -333,6 +349,7 @@ function UsersPage() {
           <div className="users-state">
             <Users size={34} />
             <h3>No staff accounts found</h3>
+
             <p>
               {search || roleFilter
                 ? "Try changing your search or role filter."
@@ -377,6 +394,11 @@ function UsersPage() {
 
                           <div>
                             <strong>{user.name}</strong>
+
+                            <small>
+                              @{user.username || "No username"}
+                            </small>
+
                             {user.specialty && (
                               <small>{user.specialty}</small>
                             )}
@@ -503,7 +525,7 @@ function UsersPage() {
 
                 <p>
                   {editingUser
-                    ? "Update staff information and account role."
+                    ? "Update staff information, username and account role."
                     : "Create a new staff account for your pharmacy."}
                 </p>
               </div>
@@ -527,6 +549,20 @@ function UsersPage() {
                     value={form.name}
                     onChange={handleChange}
                     placeholder="Enter full name"
+                    required
+                  />
+                </label>
+
+                <label>
+                  Username *
+                  <input
+                    name="username"
+                    value={form.username}
+                    onChange={handleChange}
+                    placeholder="e.g. david.mwangi"
+                    autoComplete="username"
+                    minLength={3}
+                    maxLength={30}
                     required
                   />
                 </label>
